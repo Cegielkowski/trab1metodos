@@ -59,7 +59,7 @@ int NewtonMethod(funcao *f, float x0, float e, int maxIteracao){
 
 	}while(erro>e);
 
-	printf("\nA raiz e': %f", x1);
+	printf("\nA raiz aproximada e': %.4f e foram necessarias %d iteracoes para chegar nesse valor.", x1, iteracao-1);
 }
 
 
