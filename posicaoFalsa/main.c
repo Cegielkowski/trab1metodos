@@ -5,94 +5,117 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-//Arg1
-float equacao(float x){
-	float eq;
 
-	eq = sin(x) + x*x - 1; // Intervalos que tem raiz [1.3 e 1.4] e [0 e 1]
+typedef float (funcao)(float arg);
 
-	return eq;
+float executaFuncao(funcao *funcao, float arg ){
+    float resultado;
+    if( funcao != NULL ){
+        resultado = funcao(arg);
+        return resultado;
+    }
+    printf("Erro ao executar função");
+    exit(0);
 }
 
+float funcao1(float x){  // Entre 0 e 1
+    return sin(x) + x*x - 1;
+}
+float funcao2(float x){ // Entre 0.5 e 1
+    return 4*cos(x) - exp(x);
+}
+float funcao3(float x){ // Entre 1 e 3
+    return x *x *x - 18;
+}
+
+float posicaoFalsa(funcao *f, float a, float b, float e, int maxIteracao){
+
+	float eqMin, eqMax, eqAtual, sinalMin, sinalMax, atual;
+	int iteracao=1;	//Inicia em 1, pois a primeira iteracao eh feita fora do while -- Arg 6
+
+
+
+	eqMin = f(a);
+	eqMax = f(b);
+	atual = (a*eqMax - b*eqMin)/(eqMax - eqMin);
+	printf("Ite\ta\t\tf(a)\t\tb\t\tf(b)\t\tXk\n");
+	printf("%2d\t%4.6f\t%4.6f\t%4.6f\t%4.6f\t%4.6f\n", iteracao, a, eqMin, b, eqMax, atual);
+
+	while( fabs(f(atual)) > e ){
+		eqMin = f(a);
+		eqMax = f(b);
+		eqAtual = f(atual);
+
+		atual = (a*eqMax - b*eqMin)/(eqMax - eqMin);
+
+		sinalMin = f(a) * f(atual);
+
+		if(sinalMin < 0){
+			a = atual;
+		} else {
+			b = atual;
+		}
+		printf("%2d\t%4.6f\t%4.6f\t%4.6f\t%4.6f\t%4.6f\n", iteracao, a, eqMin, b, eqMax, atual);
+
+        if (maxIteracao == iteracao) {
+            printf("Numero de iteracoes maximo atingido: arg5 %d ", maxIteracao);
+            printf("\nf(x%d) = %f",iteracao, eqAtual );
+            printf("\nNumero de iteracoes: %d", iteracao);
+            printf("\nA funcao parou no valor: %5.5f", atual);  // Arg 7
+            printf("\n\nFIM DO PROCESSO.\n");
+            return atual;
+        }
+		iteracao++;
+	}
+    if(fabs(f(atual)) < e) {
+        printf("\nf(x%d) = %f",iteracao, f(atual) );
+        printf("\nNumero de iteracoes: %d", iteracao);
+        printf("\nA funcao chega no zero no valor: %5.5f", atual);  // Arg 7
+        printf("\n\nFIM DO PROCESSO.\n");
+        return atual;
+    } else {
+        printf("\nf(x%d) = %f",iteracao, f(atual) );
+        printf("\nNumero de iteracoes: %d", iteracao);
+        printf("\nA funcao nao atingiu a precisao desejada no itervalo, ultimo valor testado: %5.5f", atual);  // Arg 7
+        printf("\n\nFIM DO PROCESSO.\n");
+        return atual;
+    }
+}
+
+
+
 int main(void){
-	
-	//Limites
-	float mim; // Arg 2
-	float max; // Arg 3 
-	float atual;
-	float erro; // Arg 4
-    int maxIt; // Arg 5
 
-	//Equacoes
-	float eqMim;
-	float eqMax;
-	float eqAtual;
-	float sinalMim;
-	float sinalMax;
+	float limiteInferior, limiteSuperior, erro; // Arg 2, 3, 4
+    int maxIteracao, escolha; // Arg 5
+    int *funcaoEscolhida[4];
 
-	//Contador de iteracoes
-	int k=1;	//Inicia em 1, pois a primeira iteracao eh feita fora do while -- Arg 6
+    //Mapeando as 3 funções
+    funcaoEscolhida[1] = &funcao1;
+	funcaoEscolhida[2] = &funcao2;
+	funcaoEscolhida[3] = &funcao3;
 
-	puts("\nEste programa encontra zeros reais em funcoes reais pelo metodo da falsa posicao");
-
-	puts("Digite seu valor minimo");
-	scanf("%f", &mim);
-	puts("Digite seu valor maximo");
-	scanf("%f", &max);
-    puts("Digite seu o erro");
+	printf("\nEste programa encontra zeros reais em funcoes reais pelo metodo da falsa posicao\n\n");
+    printf("\nEscolha a funcao\n[1] sen(x) - x^2 - 1 \n[2] 4cos(x) - exp(x)\n[3] x^3 - 18\n");
+	scanf("%d", &escolha);
+	printf("Digite seu valor minimo:\n");
+	scanf("%f", &limiteInferior);
+	printf("Digite seu valor maximo:\n");
+	scanf("%f", &limiteSuperior);
+    printf("Digite seu o erro:\n");
 	scanf("%f", &erro);
-    puts("Digite seu o max de iteracoes");
-	scanf("%d", &maxIt);
+    printf("Digite seu o max de iteracoes:\n");
+	scanf("%d", &maxIteracao);
 
-    if (equacao(mim) == 0 || equacao(max) == 0) {
-        printf("Raiz é um dos limites do intervalo. Raiz é %f\n", equacao(mim) == 0 ? mim : max);
+    if (executaFuncao(funcaoEscolhida[escolha], limiteInferior) == 0 || executaFuncao(funcaoEscolhida[escolha], limiteSuperior) == 0) {
+        printf("Raiz é um dos limites do intervalo. Raiz é %f\n", executaFuncao(funcaoEscolhida[escolha], limiteInferior) == 0 ? limiteInferior : limiteSuperior);
         exit(0);
-    } else if (maxIt <= 0) {
+    } else if (maxIteracao <= 0) {
         printf("O numero maximo de iteracoes tem que ser superior a 0");
         exit(0);
     }
 
+    posicaoFalsa(funcaoEscolhida[escolha], limiteInferior, limiteSuperior, erro, maxIteracao);
 
-
-	eqMim = equacao(mim);
-	eqMax = equacao(max);
-	atual = (mim*eqMax - max*eqMim)/(eqMax - eqMim);
-
-	while( fabs(equacao(atual)) > erro ){
-		eqMim = equacao(mim);
-		eqMax = equacao(max);
-		eqAtual = equacao(atual);
-
-		atual = (mim*eqMax - max*eqMim)/(eqMax - eqMim);
-
-		sinalMim = equacao(mim) * equacao(atual);
-
-		if(sinalMim < 0){
-			mim = atual;
-		} else {
-			max = atual;
-		}
-        
-        if (maxIt == k) {
-            printf("Numero de iteracoes maximo atingido: arg5 %d ", maxIt);
-            printf("\nf(x%d) = %f",k, eqAtual );
-            printf("\nNumero de iteracoes: %d", k);
-            printf("\nA funcao parou no valor: %5.5f", atual);  // Arg 7
-            puts("\n\nFIM DO PROCESSO.\n");
-            return 0;
-        }
-		k++;
-	}
-    if(fabs(equacao(atual)) < erro) {
-        printf("\nf(x%d) = %f",k, equacao(atual) );
-        printf("\nNumero de iteracoes: %d", k);
-        printf("\nA funcao chega no zero no valor: %5.5f", atual);  // Arg 7
-        puts("\n\nFIM DO PROCESSO.\n");
-    } else {
-        printf("\nf(x%d) = %f",k, equacao(atual) );
-        printf("\nNumero de iteracoes: %d", k);
-        printf("\nA funcao nao atingiu a precisao desejada no itervalo, ultimo valor testado: %5.5f", atual);  // Arg 7
-        puts("\n\nFIM DO PROCESSO.\n");
-    }
 	return 0;
 }
