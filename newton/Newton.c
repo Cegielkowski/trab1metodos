@@ -9,21 +9,38 @@
 
 typedef float (funcao)(float arg);
 
+float executaFuncao(funcao *funcao, float arg ){
+    float resultado;
+    if( funcao != NULL ){
+        resultado = funcao(arg);
+        return resultado;
+    }
+    printf("Erro ao executar função");
+    exit(0);
+}
+
 float funcao1(float x){
     return 3 *x - cos(x) -1;
 }
 float funcao2(float x){
     return 4*cos(x) - exp(x);
 }
-/* Derivada funcao1
+float funcao3(float x){
+    return x *x *x - 18;
+}
+/* Derivada funcao1 e funcao3
 float g(float x){
     return 3 + sin(x);
 }
+float g(float x){
+    return 3 *x *x;
+}
 */
-//Derivada funcao1
+//Derivada funcao2
 float g(float x){
     return -4*sin(x) - exp(x);
 }
+
 
 int NewtonMethod(funcao *f, float x0, float e, int maxIteracao){
     float x1, f0, f1, g0, erro=1;
@@ -66,7 +83,18 @@ int NewtonMethod(funcao *f, float x0, float e, int maxIteracao){
 void main()
 {
 	 float xInicial, erro;
-	 int maxIteracao;
+	 int maxIteracao, escolha;
+	 int *funcaoEscolhida[4];
+
+    //Mapeando as 3 funções
+	 funcaoEscolhida[1] = &funcao1;
+	 funcaoEscolhida[2] = &funcao2;
+	 funcaoEscolhida[3] = &funcao3;
+
+	 printf("\nEscolha a funcao\n[1] 3x - cos(x) - 1 \n[2] 4cos(x) - exp(x)\n");
+	 scanf("%d", &escolha);
+
+	 printf("teste %f", executaFuncao(funcaoEscolhida[escolha], escolha) );
 
 	 printf("\nDigite o chute inicial:\n");
 	 scanf("%f", &xInicial);
@@ -77,7 +105,7 @@ void main()
 
 
     /* Chamada do método de Newton Args ( Função Escolhida, Chute Inicial, Erro Máximo e Máximo de Iterações */
-    NewtonMethod(funcao2, xInicial, erro, maxIteracao);
+    NewtonMethod(funcaoEscolhida[escolha], xInicial, erro, maxIteracao);
 
     //Somente para o programa não fechar
     getch();
