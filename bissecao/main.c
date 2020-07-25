@@ -14,13 +14,13 @@ float executaFuncao(funcao *funcao, float arg ){
     exit(0);
 }
 
-float funcao1(float x){
-    return 3 *x - cos(x) -1;
+float funcao1(float x){  // Entre 0 e 1
+    return sin(x) + x*x - 1;
 }
-float funcao2(float x){
+float funcao2(float x){ // Entre 0.5 e 1
     return 4*cos(x) - exp(x);
 }
-float funcao3(float x){
+float funcao3(float x){ // Entre 1 e 3
     return x *x *x - 18;
 }
 
@@ -72,7 +72,7 @@ int main() {
 
 
 
-	printf("\nEscolha a funcao\n[1] 3x - cos(x) - 1 \n[2] 4cos(x) - exp(x)\n[3] x^3 - 18\n");
+	printf("\nEscolha a funcao\n[1] sen(x) - x^2 - 1 \n[2] 4cos(x) - exp(x)\n[3] x^3 - 18\n");
 	scanf("%d", &escolha);
     printf("Digite o intervalo [a , b] Ex: 1 3: \n");
     scanf("%f %f", &limiteInferior, &limiteSuperior);
@@ -82,7 +82,7 @@ int main() {
     scanf("%d", &maxIteracao);
 
     if ((executaFuncao(funcaoEscolhida[escolha], limiteInferior) * executaFuncao(funcaoEscolhida[escolha], limiteSuperior)) > 0) {
-        printf("Intervalo invalido Exit!"); //para testar se o intervalo de pesquisa
+        printf("Intervalo invalido!"); //para testar se o intervalo de pesquisa
         exit(1);                            //esta ok ou nao
     } else if (executaFuncao(funcaoEscolhida[escolha], limiteInferior) == 0 || executaFuncao(funcaoEscolhida[escolha], limiteSuperior) == 0) {
         printf("Raiz é um dos limites do intervalo. Raiz é %f\n", executaFuncao(funcaoEscolhida[escolha], limiteInferior) == 0 ? limiteInferior : limiteSuperior);
