@@ -28,17 +28,11 @@ float funcao2(float x){
 float funcao3(float x){
     return x *x *x - 18;
 }
-/* Derivada funcao1 e funcao3
-float g(float x){
-    return 3 + sin(x);
-}
-float g(float x){
-    return 3 *x *x;
-}
-*/
-//Derivada funcao2
-float g(float x){
-    return -4*sin(x) - exp(x);
+
+// Método derivada
+float derivada(funcao *f, float x){
+    float h = 1.0e-6; // Numero tendendo a 0
+    return (f(x+h)-f(x-h))/(2*h);
 }
 
 
@@ -47,7 +41,7 @@ int NewtonMethod(funcao *f, float x0, float e, int maxIteracao){
     int iteracao = 1;
     printf("\nIteracao\tx0\t\tf(x0)\t\tx1\t\tf(x1)\t\tErro\n");
     do{
-        g0 = g(x0);
+        g0 = derivada(f, x0);
         f0 = f(x0);
         if(g0 == 0.0){
             printf("Erro de Calculo!\nF'(x) nao pode ser 0 para que o erro possa ser calculado.");
@@ -91,7 +85,7 @@ void main()
 	 funcaoEscolhida[2] = &funcao2;
 	 funcaoEscolhida[3] = &funcao3;
 
-	 printf("\nEscolha a funcao\n[1] 3x - cos(x) - 1 \n[2] 4cos(x) - exp(x)\n");
+	 printf("\nEscolha a funcao\n[1] 3x - cos(x) - 1 \n[2] 4cos(x) - exp(x)\n[3] x^3 - 18\n");
 	 scanf("%d", &escolha);
 	 printf("\nDigite o chute inicial:\n");
 	 scanf("%f", &xInicial);
