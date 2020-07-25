@@ -93,9 +93,6 @@ void main()
 
 	 printf("\nEscolha a funcao\n[1] 3x - cos(x) - 1 \n[2] 4cos(x) - exp(x)\n");
 	 scanf("%d", &escolha);
-
-	 printf("teste %f", executaFuncao(funcaoEscolhida[escolha], escolha) );
-
 	 printf("\nDigite o chute inicial:\n");
 	 scanf("%f", &xInicial);
 	 printf("Digite o erro maximo:\n");
