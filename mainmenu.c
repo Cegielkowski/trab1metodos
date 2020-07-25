@@ -1,5 +1,5 @@
 /*
-TRABALHO 1 DISCIPLINA DE MÉTODOS NUMÉRICOS COMPUTACIONAIS
+TRABALHO 1 DISCIPLINA DE Mï¿½TODOS NUMï¿½RICOS COMPUTACIONAIS
 UNESP Bauru - 1 SEM 2020
 AMANDA MEIRA
 ARTHUR CIPOLARI 151022071
@@ -10,19 +10,18 @@ LUCAS CEGIELKOWSKI
 #include <stdlib.h>
 #include <math.h>
 
-// Declarando equação para executar como função
-typedef double (funcao)(double arg);
-// Método que executa a equação fora da função para validações
-double executaFuncao(funcao *funcao, double arg ){
-    double resultado;
+
+// Declarando equaï¿½ï¿½o para executar como funï¿½ï¿½o
+typedef double (*funcao)(double arg);
+// Mï¿½todo que executa a equaï¿½ï¿½o fora da funï¿½ï¿½o para validaï¿½ï¿½es
+double executaFuncao(funcao funcao, double arg){
     if( funcao != NULL ){
-        resultado = funcao(arg);
-        return resultado;
+        return (*funcao)(arg);
     }
-    printf("Erro ao executar função");
+    printf("Erro ao executar funï¿½ï¿½o");
     exit(0);
 }
-// Funções definidas
+// Funï¿½ï¿½es definidas
 double funcao1(double x){  // Entre 0 e 1
     return (sin(x) + (x*x) - 1);
 }
@@ -32,8 +31,8 @@ double funcao2(double x){ // Entre 0.5 e 1
 double funcao3(double x){ // Entre 1 e 3
     return ((x *x *x) - 18);
 }
-// Método bisseccao
-double bisseccao(funcao *f, double a, double b, double e, int maxIteracao){
+// Mï¿½todo bisseccao
+double bisseccao(funcao f, double a, double b, double e, int maxIteracao){
 
       int iteracao = 1;
       double raizAuxiliar, raiz, erroParcial;
@@ -43,10 +42,10 @@ double bisseccao(funcao *f, double a, double b, double e, int maxIteracao){
 
     raizAuxiliar = raiz;
     raiz = (a + b) / 2;
-    printf("%2d\t%4.6lf\t%4.6lf\t%4.6f\t%4.6lf\t", iteracao, a, b, raiz, f(raiz));
-    if (f(raiz) == 0) {
+    printf("%2d\t%4.6lf\t%4.6lf\t%4.6f\t%4.6lf\t", iteracao, a, b, raiz, (*f)(raiz));
+    if ((*f)(raiz) == 0) {
       printf("A raiz e %4.6lf\n", raiz);
-    } else if ((f(a) * f(raiz)) < 0) {
+    } else if (((*f)(a) * (*f)(raiz)) < 0) {
       b = raiz;
     } else a = raiz;
     erroParcial = fabs(raiz - raizAuxiliar);
@@ -66,28 +65,28 @@ double bisseccao(funcao *f, double a, double b, double e, int maxIteracao){
     iteracao++;
   } while (erroParcial > e);
 }
-// Método posição falsa
-double posicaoFalsa(funcao *f, double a, double b, double e, int maxIteracao){
+// Mï¿½todo posiï¿½ï¿½o falsa
+double posicaoFalsa(funcao f, double a, double b, double e, int maxIteracao){
 
 	double eqMin, eqMax, eqAtual, sinalMin, sinalMax, atual;
 	int iteracao=1;	//Inicia em 1, pois a primeira iteracao eh feita fora do while -- Arg 6
 
 
 
-	eqMin = f(a);
-	eqMax = f(b);
+	eqMin = (*f)(a);
+	eqMax = (*f)(b);
 	atual = (a*eqMax - b*eqMin)/(eqMax - eqMin);
 	printf("Ite\ta\t\tf(a)\t\tb\t\tf(b)\t\tXk\n");
 	printf("%2d\t%4.6lf\t%4.6lf\t%4.6lf\t%4.6lf\t%4.6lf\n", iteracao, a, eqMin, b, eqMax, atual);
 
-	while( fabs(f(atual)) > e ){
-		eqMin = f(a);
-		eqMax = f(b);
-		eqAtual = f(atual);
+	while( fabs((*f)(atual)) > e ){
+		eqMin = (*f)(a);
+		eqMax = (*f)(b);
+		eqAtual = (*f)(atual);
 
 		atual = (a*eqMax - b*eqMin)/(eqMax - eqMin);
 
-		sinalMin = f(a) * f(atual);
+		sinalMin = (*f)(a) * (*f)(atual);
 
 		if(sinalMin < 0){
 			a = atual;
@@ -106,42 +105,40 @@ double posicaoFalsa(funcao *f, double a, double b, double e, int maxIteracao){
         }
 		iteracao++;
 	}
-    if(fabs(f(atual)) < e) {
-        printf("\nf(x%d) = %lf",iteracao, f(atual) );
+    if(fabs((*f)(atual)) < e) {
+        printf("\nf(x%d) = %lf",iteracao, (*f)(atual) );
         printf("\nNumero de iteracoes: %d", iteracao);
         printf("\nA funcao chega no zero no valor: %5.5lf", atual);  // Arg 7
         printf("\n\nFIM DO PROCESSO.\n");
         return atual;
     } else {
-        printf("\nf(x%d) = %lf",iteracao, f(atual) );
+        printf("\nf(x%d) = %lf",iteracao, (*f)(atual) );
         printf("\nNumero de iteracoes: %d", iteracao);
         printf("\nA funcao nao atingiu a precisao desejada no itervalo, ultimo valor testado: %5.5lf", atual);  // Arg 7
         printf("\n\nFIM DO PROCESSO.\n");
         return atual;
     }
 }
-// Método derivada
-double derivada(funcao *f, double x){
+// Mï¿½todo derivada
+double derivada(funcao f, double x){
     double h = 1.0e-6; // Numero tendendo a 0
-    return (f(x+h)-f(x-h))/(2*h);
+    return ((*f)(x+h)-(*f)(x-h))/(2*h);
 }
-// Método Newton
-double NewtonMethod(funcao *f, double x0, double e, int maxIteracao){
+// Mï¿½todo Newton
+double NewtonMethod(funcao f, double x0, double e, int maxIteracao){
     double x1, f0, f1, g0, erro=1;
     int iteracao = 1;
     printf("\nIteracao\tx0\t\tf(x0)\t\tx1\t\tf(x1)\t\tErro\n");
     do{
         g0 = derivada(f, x0);
-        f0 = f(x0);
+        f0 = (*f)(x0);
         if(g0 == 0.0){
             printf("Erro de Calculo!\nF'(x) nao pode ser 0 para que o erro possa ser calculado.");
-            //Somente para o programa não fechar
-            getch();
             return 0;
         }
 
         x1 = x0 - f0/g0;
-        f1 = f(x1);
+        f1 = (*f)(x1);
         erro = fabs(x1-x0)/fabs(x1);
 
         printf("%d\t\t%lf\t%lf\t%lf\t%lf\t%lf\n",iteracao,x0,f0,x1,f1,erro);
@@ -151,8 +148,6 @@ double NewtonMethod(funcao *f, double x0, double e, int maxIteracao){
 
         if(iteracao > maxIteracao){
             printf("Nao convergiu no maximo das iteracoes.");
-            //Somente para o programa não fechar
-            getch();
             return 0;
         }
 
@@ -161,13 +156,13 @@ double NewtonMethod(funcao *f, double x0, double e, int maxIteracao){
 	printf("\nA raiz aproximada e': %.4lf e foram necessarias %d iteracoes para chegar nesse valor.", x1, iteracao-1);
 }
 
-void main(){
+int main(void){
 
     double xInicial, limiteInferior, limiteSuperior, erro; // Arg 2, Arg 3, Arg 4
     int maxIteracao, escolha, metodo=9; // Arg 5
-    int *funcaoEscolhida[4]; // Arg 1
+    funcao funcaoEscolhida[4]; // Arg 1
 
-    //Mapeando as 3 funções
+    //Mapeando as 3 funï¿½ï¿½es
     funcaoEscolhida[1] = &funcao1;
 	funcaoEscolhida[2] = &funcao2;
 	funcaoEscolhida[3] = &funcao3;
@@ -188,8 +183,7 @@ void main(){
         printf("\nEscolha: ");
         scanf ("%d", &metodo);
         if(metodo==0){
-            printf ("\nPressione qualquer tecla para sair...");
-            getch();
+            printf ("\nPressione qualquer tecla para fechar...\n");
             exit(0);
         }
         switch (metodo){
@@ -209,13 +203,13 @@ void main(){
                 printf("Intervalo invalido!"); //para testar se o intervalo de pesquisa
                 break;                           //esta ok ou nao
             } else if (executaFuncao(funcaoEscolhida[escolha], limiteInferior) == 0 || executaFuncao(funcaoEscolhida[escolha], limiteSuperior) == 0) {
-                printf("Raiz é um dos limites do intervalo. Raiz é %lf\n", executaFuncao(funcaoEscolhida[escolha], limiteInferior) == 0 ? limiteInferior : limiteSuperior);
+                printf("Raiz ï¿½ um dos limites do intervalo. Raiz ï¿½ %lf\n", executaFuncao(funcaoEscolhida[escolha], limiteInferior) == 0 ? limiteInferior : limiteSuperior);
                 break;
             } else if (maxIteracao <= 0) {
                 printf("O numero maximo de iteracoes tem que ser superior a 0");
                 break;
             }
-            bisseccao(funcaoEscolhida[escolha], limiteInferior, limiteSuperior, erro, maxIteracao);
+            bisseccao(*funcaoEscolhida[escolha], limiteInferior, limiteSuperior, erro, maxIteracao);
             break;
 
         case 2:
@@ -230,7 +224,7 @@ void main(){
             scanf("%d", &maxIteracao);
 
             if (executaFuncao(funcaoEscolhida[escolha], limiteInferior) == 0 || executaFuncao(funcaoEscolhida[escolha], limiteSuperior) == 0) {
-                printf("Raiz é um dos limites do intervalo. Raiz é %lf\n", executaFuncao(funcaoEscolhida[escolha], limiteInferior) == 0 ? limiteInferior : limiteSuperior);
+                printf("Raiz ï¿½ um dos limites do intervalo. Raiz ï¿½ %lf\n", executaFuncao(funcaoEscolhida[escolha], limiteInferior) == 0 ? limiteInferior : limiteSuperior);
                 break;
             } else if (maxIteracao <= 0) {
                 printf("O numero maximo de iteracoes tem que ser superior a 0");
@@ -261,7 +255,7 @@ void main(){
             scanf("%d", &maxIteracao);
 
 
-            /* Chamada do método de Newton Args ( Função Escolhida, Chute Inicial, Erro Máximo e Máximo de Iterações */
+            /* Chamada do mï¿½todo de Newton Args ( Funï¿½ï¿½o Escolhida, Chute Inicial, Erro Mï¿½ximo e Mï¿½ximo de Iteraï¿½ï¿½es */
             NewtonMethod(funcaoEscolhida[escolha], xInicial, erro, maxIteracao);
             break;
 
